@@ -1,0 +1,371 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#123d2b">
+<title>ShambaLink | From Farm to Market</title>
+<style>
+:root {
+  --green:#187447;
+  --dark:#123d2b;
+  --gold:#f3c45e;
+  --light:#eef7f0;
+  --text:#203127;
+  --muted:#6c7b70;
+  --white:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:#f7faf7}
+header{background:var(--dark);color:white;padding:17px 5%;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.logo{font-size:23px;font-weight:900;letter-spacing:-1px}
+.logo span{color:var(--gold)}
+.tagline{font-size:11px;color:#cfe2d4;margin-top:4px}
+button,input,select,textarea{font:inherit}
+button{border:0;border-radius:10px;padding:12px 15px;background:var(--green);color:white;font-weight:700;cursor:pointer}
+button.secondary{background:#e5f0e8;color:var(--dark)}
+button.gold{background:var(--gold);color:var(--dark)}
+button:disabled{opacity:.5}
+main{max-width:1080px;margin:auto;padding:20px}
+.hero{background:linear-gradient(135deg,#123d2b,#26784b);color:white;border-radius:22px;padding:32px 24px;margin-bottom:24px}
+.pill{display:inline-block;border:1px solid #ffffff55;background:#ffffff15;padding:7px 11px;border-radius:30px;font-size:12px}
+.hero h1{font-size:clamp(34px,7vw,54px);line-height:1.08;letter-spacing:-2px;margin:18px 0 12px}
+.hero p{color:#e1eee4;line-height:1.7;max-width:560px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:25px}
+.stat{background:#ffffff14;padding:13px;border-radius:12px}
+.stat strong{display:block;font-size:19px}
+.stat small{color:#d4e5d8;font-size:12px}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:26px 0 14px}
+h2{font-size:22px;margin:0}
+.filters{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:15px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #dce5dd;border-radius:10px;background:white;color:var(--text)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card,.panel{background:white;border:1px solid #e1e9e2;border-radius:16px;padding:16px}
+.crop-icon{width:62px;height:62px;background:var(--light);border-radius:13px;display:grid;place-items:center;font-size:30px}
+.card h3{margin:10px 0 6px;font-size:19px}
+.meta{font-size:12px;color:var(--muted);margin:8px 0}
+.price{font-size:21px;color:var(--green);font-weight:900}
+.desc{font-size:14px;color:var(--muted);line-height:1.6}
+.panel{margin:18px 0}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.field{display:grid;gap:6px;font-size:13px;font-weight:700}
+.full{grid-column:1/-1}
+.hidden{display:none!important}
+.notice{padding:12px;background:#e9f4eb;color:var(--dark);border-radius:10px;margin:12px 0;overflow-wrap:anywhere}
+.error{background:#fff0ee;color:#a52222}
+footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
+@media(max-width:600px){
+ header{padding:14px 4%}.logo{font-size:19px}
+ main{padding:12px}.hero{padding:25px 17px}
+ .grid,.form-grid{grid-template-columns:1fr}
+ .filters{grid-template-columns:1fr}.full{grid-column:auto}
+ .stats{gap:6px}.stat{padding:9px}.stat strong{font-size:15px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo">🌱 Shamba<span>Link</span></div>
+    <div class="tagline">From every shamba to every market.</div>
+  </div>
+  <button class="gold" id="accountBtn">Sign in</button>
+</header>
+
+<main>
+<section class="hero">
+  <span class="pill">🇰🇪 Kenya-wide agricultural marketplace</span>
+  <h1>Good harvests.<br>Better connections.</h1>
+  <p>Discover crops, connect with farmers, and find agricultural suppliers
+  across Kenya. From maize and rice to fruits, vegetables and beans.</p>
+  <div class="actions">
+    <button class="gold" onclick="document.getElementById('market').scrollIntoView({behavior:'smooth'})">Explore crops ↓</button>
+    <button class="secondary" id="sellHero">Sell your crops</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><strong>47</strong><small>Kenyan counties</small></div>
+    <div class="stat"><strong>All crops</strong><small>Many varieties</small></div>
+    <div class="stat"><strong>One link</strong><small>Farm to market</small></div>
+  </div>
+</section>
+
+<div id="notice" class="notice hidden"></div>
+
+<section id="authPanel" class="panel hidden">
+  <div class="section-title"><h2 id="authTitle">Welcome to ShambaLink</h2><button class="secondary" id="closeAuth">Close</button></div>
+  <div class="actions">
+    <button id="loginTab">Sign in</button>
+    <button class="secondary" id="registerTab">Create account</button>
+  </div>
+  <form id="authForm" class="form-grid" style="margin-top:15px">
+    <label id="nameWrap" class="field hidden">Full name
+      <input id="fullName" maxlength="100">
+    </label>
+    <label id="roleWrap" class="field hidden">Account type
+      <select id="role"><option value="farmer">Farmer / Seller</option><option value="buyer">Buyer</option></select>
+    </label>
+    <label class="field">Email
+      <input id="email" type="email" autocomplete="email" required>
+    </label>
+    <label class="field">Password
+      <input id="password" type="password" minlength="8" required autocomplete="current-password">
+    </label>
+    <label id="countyWrap" class="field full hidden">County
+      <select id="profileCounty"></select>
+    </label>
+    <button class="full" id="authSubmit">Sign in</button>
+  </form>
+</section>
+
+<section id="sellerPanel" class="panel hidden">
+  <div class="section-title"><h2>List your crops</h2><button class="secondary" id="closeSeller">Close</button></div>
+  <form id="cropForm" class="form-grid">
+    <label class="field">Crop name<input id="cropName" required maxlength="100" placeholder="e.g. Dry maize"></label>
+    <label class="field">County<select id="cropCounty" required></select></label>
+    <label class="field">Quantity<input id="quantity" type="number" min=".01" step="any" required></label>
+    <label class="field">Unit<select id="unit"><option>kg</option><option>tonnes</option><option>bags</option><option>crates</option></select></label>
+    <label class="field">Price per unit (KSh)<input id="price" type="number" min="0" step=".01" required></label>
+    <label class="field">Contact phone<input id="phone" type="tel" maxlength="25" placeholder="07xx xxx xxx"></label>
+    <label class="field full">Description<textarea id="description" maxlength="1500" placeholder="Quality, variety, harvest date, delivery details..."></textarea></label>
+    <button class="full" id="publishBtn">Publish crop listing</button>
+  </form>
+</section>
+
+<section id="accountPanel" class="panel hidden">
+  <div class="section-title"><h2>My account</h2><button class="secondary" id="closeAccount">Close</button></div>
+  <p id="accountInfo"></p>
+  <div class="actions"><button class="secondary" id="myListings">My listings</button><button id="signOut">Sign out</button></div>
+  <div id="myListingsArea" class="grid" style="margin-top:15px"></div>
+</section>
+
+<section id="market">
+  <div class="section-title"><h2>Explore available crops</h2><button id="sellBtn">+ Sell crops</button></div>
+  <div class="filters">
+    <input id="search" placeholder="Search maize, rice, beans..." aria-label="Search crops">
+    <select id="countyFilter" aria-label="Filter by county"></select>
+  </div>
+  <div id="cropGrid" class="grid"><div class="card">Connect Supabase to load live listings.</div></div>
+</section>
+
+<section id="adminPanel" class="panel hidden">
+  <div class="section-title"><h2>🔐 Private Admin Dashboard</h2><button class="secondary" id="closeAdmin">Close</button></div>
+  <p class="meta">Restricted to authorized ShambaLink administrators.</p>
+  <div class="stats" style="color:#203127">
+    <div class="stat" style="background:#eef7f0"><strong id="userCount">—</strong><small>Accounts</small></div>
+    <div class="stat" style="background:#eef7f0"><strong id="listingCount">—</strong><small>Listings</small></div>
+    <div class="stat" style="background:#eef7f0"><strong id="countyCount">—</strong><small>Counties</small></div>
+  </div>
+  <div class="section-title"><h2>Manage listings</h2><button class="secondary" id="refreshAdmin">Refresh</button></div>
+  <div id="adminListings"></div>
+  <div class="section-title"><h2>Registered users</h2></div>
+  <div id="adminUsers"></div>
+</section>
+</main>
+
+<footer>© <span id="year"></span> ShambaLink · Connecting Kenya's agricultural community.</footer>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+// Replace these after creating your Supabase project.
+const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
+const SUPABASE_KEY = 'YOUR_SUPABASE_PUBLISHABLE_KEY';
+
+const counties = [
+'Baringo','Bomet','Bungoma','Busia','Elgeyo-Marakwet','Embu',
+'Garissa','Homa Bay','Isiolo','Kajiado','Kakamega','Kericho',
+'Kiambu','Kilifi','Kirinyaga','Kisii','Kisumu','Kitui','Kwale',
+'Laikipia','Lamu','Machakos','Makueni','Mandera','Marsabit',
+'Meru','Migori','Mombasa','Murang’a','Nairobi','Nakuru',
+'Nandi','Narok','Nyamira','Nyandarua','Nyeri','Samburu',
+'Siaya','Taita-Taveta','Tana River','Tharaka-Nithi','Trans Nzoia',
+'Turkana','Uasin Gishu','Vihiga','Wajir','West Pokot'
+];
+const $ = id => document.getElementById(id);
+$('year').textContent = new Date().getFullYear();
+
+function esc(v='') {
+  return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function notice(msg,error=false) {
+  $('notice').textContent=msg;
+  $('notice').className='notice'+(error?' error':'');
+}
+function hideNotice() {$('notice').classList.add('hidden');}
+function openPanel(id) {
+  ['authPanel','sellerPanel','accountPanel','adminPanel'].forEach(x=>$(x).classList.add('hidden'));
+  $(id).classList.remove('hidden');
+  $(id).scrollIntoView({behavior:'smooth',block:'start'});
+}
+for(const id of ['profileCounty','cropCounty','countyFilter']) {
+  $(id).innerHTML=(id==='countyFilter'?'<option value="">All counties</option>':'')+
+    counties.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+}
+
+let db=null,session=null,profile=null,mode='login',crops=[];
+
+function authMode(m) {
+  mode=m;
+  const reg=m==='register';
+  $('authTitle').textContent=reg?'Create your account':'Welcome back';
+  $('authSubmit').textContent=reg?'Create account':'Sign in';
+  $('nameWrap').classList.toggle('hidden',!reg);
+  $('roleWrap').classList.toggle('hidden',!reg);
+  $('countyWrap').classList.toggle('hidden',!reg);
+  $('password').autocomplete=reg?'new-password':'current-password';
+  $('loginTab').className=reg?'secondary':'';
+  $('registerTab').className=reg?'':'secondary';
+}
+$('loginTab').onclick=()=>authMode('login');
+$('registerTab').onclick=()=>authMode('register');
+$('closeAuth').onclick=()=>$('authPanel').classList.add('hidden');
+$('closeSeller').onclick=()=>$('sellerPanel').classList.add('hidden');
+$('closeAccount').onclick=()=>$('accountPanel').classList.add('hidden');
+$('closeAdmin').onclick=()=>$('adminPanel').classList.add('hidden');
+$('accountBtn').onclick=()=>{
+  if(!db)return notice('Supabase setup is not complete yet.',true);
+  if(!session){openPanel('authPanel');authMode('login');return;}
+  $('accountInfo').textContent=(profile?.full_name||session.user.email)+' · '+(profile?.role||'member');
+  openPanel('accountPanel');
+};
+function sell() {
+  if(!db)return notice('Connect Supabase before publishing crop listings.',true);
+  if(!session){openPanel('authPanel');authMode('login');notice('Sign in or create an account to list crops.');return;}
+  openPanel('sellerPanel');
+}
+$('sellBtn').onclick=$('sellHero').onclick=sell;
+
+if(SUPABASE_URL.startsWith('YOUR_')||SUPABASE_KEY.startsWith('YOUR_')) {
+  $('cropGrid').innerHTML='<div class="card">🌱 ShambaLink is ready for database setup. Next, connect Supabase to enable accounts and live listings.</div>';
+  notice('Website design loaded. Authentication and listings will work after Supabase is configured.');
+} else {
+  db=createClient(SUPABASE_URL,SUPABASE_KEY);
+  $('authForm').onsubmit=async e=>{
+    e.preventDefault();hideNotice();$('authSubmit').disabled=true;
+    try {
+      const email=$('email').value.trim(),password=$('password').value;
+      if(mode==='register') {
+        const {data,error}=await db.auth.signUp({email,password,options:{data:{
+          full_name:$('fullName').value.trim(),role:$('role').value,county:$('profileCounty').value
+        }}});
+        if(error)throw error;
+        if(data.session){session=data.session;await loadProfile();notice('Account created successfully.','success');}
+        else notice('Registration received. Check your email for a confirmation link.');
+      } else {
+        const {data,error}=await db.auth.signInWithPassword({email,password});
+        if(error)throw error;
+        session=data.session;await loadProfile();notice('Signed in successfully.');
+      }
+      await loadCrops();
+    } catch(err){notice(err.message||'Could not authenticate.',true);}
+    finally{$('authSubmit').disabled=false;}
+  };
+
+  async function loadProfile() {
+    profile=null;
+    if(session) {
+      const {data,error}=await db.from('profiles').select('id,full_name,role,county').eq('id',session.user.id).maybeSingle();
+      if(error)notice('Profile could not load. Check your database setup.',true);
+      else profile=data;
+    }
+    $('accountBtn').textContent=session?'My account':'Sign in';
+    if(profile?.role==='admin') {
+      if(!$('adminNav')) {
+        const b=document.createElement('button');b.id='adminNav';b.textContent='Admin';b.className='gold';
+        $('accountBtn').before(b);
+        b.onclick=async()=>{if(profile?.role!=='admin')return notice('Not authorized.',true);openPanel('adminPanel');await loadAdmin();};
+      }
+    } else $('adminNav')?.remove();
+  }
+  db.auth.onAuthStateChange((_event,s)=>{
+    session=s;
+    setTimeout(async()=>{await loadProfile();await loadCrops();},0);
+  });
+
+  $('cropForm').onsubmit=async e=>{
+    e.preventDefault();
+    if(!session)return notice('Please sign in first.',true);
+    const row={
+      user_id:session.user.id,crop_name:$('cropName').value.trim(),
+      county:$('cropCounty').value,quantity:Number($('quantity').value),
+      unit:$('unit').value,price_per_unit:Number($('price').value),
+      contact_phone:$('phone').value.trim(),description:$('description').value.trim(),
+      status:'published'
+    };
+    $('publishBtn').disabled=true;
+    try {
+      const {error}=await db.from('crops').insert(row);
+      if(error)throw error;
+      $('cropForm').reset();$('sellerPanel').classList.add('hidden');
+      notice('Your crop listing has been published.');
+      await loadCrops();
+    } catch(err){notice(err.message||'Could not publish listing.',true);}
+    finally{$('publishBtn').disabled=false;}
+  };
+
+  function render(list,target='cropGrid',mine=false) {
+    if(!list.length){$(target).innerHTML='<div class="card">No matching crop listings yet.</div>';return;}
+    $(target).innerHTML=list.map(c=>`<article class="card">
+      <div class="crop-icon">🌾</div>
+      <div class="meta">${esc(c.county)} County · ${new Date(c.created_at).toLocaleDateString('en-KE')}</div>
+      <h3>${esc(c.crop_name)}</h3>
+      <div class="price">KSh ${Number(c.price_per_unit).toLocaleString('en-KE')} / ${esc(c.unit)}</div>
+      <p class="desc">Available: ${Number(c.quantity).toLocaleString('en-KE')} ${esc(c.unit)}</p>
+      <p class="desc">${esc(c.description||'Contact the seller for details.')}</p>
+      ${mine?`<span class="meta">${esc(c.status)}</span>`:`<button class="contact" data-id="${esc(c.id)}">Contact seller</button>`}
+    </article>`).join('');
+    if(!mine)$(target).querySelectorAll('.contact').forEach(b=>b.onclick=async()=>{
+      if(!session){openPanel('authPanel');authMode('login');return notice('Sign in to access seller contact details.');}
+      const c=list.find(x=>x.id===b.dataset.id);
+      const {data,error}=await db.from('crops').select('contact_phone').eq('id',c.id).single();
+      if(error)return notice('Could not retrieve contact. Check database permissions.',true);
+      const {data:p}=await db.from('profiles').select('full_name').eq('id',c.user_id).maybeSingle();
+      notice('Seller: '+(p?.full_name||'ShambaLink member')+(data.contact_phone?' · Phone: '+data.contact_phone:' · No phone provided.'));
+    });
+  }
+  async function loadCrops() {
+    const {data,error}=await db.from('crops').select('id,user_id,crop_name,description,county,quantity,unit,price_per_unit,status,created_at').eq('status','published').order('created_at',{ascending:false}).limit(100);
+    if(error){$('cropGrid').innerHTML='<div class="card">Listings unavailable. Check Supabase setup and security policies.</div>';return;}
+    crops=data||[];filter();
+  }
+  function filter() {
+    const q=$('search').value.trim().toLowerCase(),county=$('countyFilter').value;
+    render(crops.filter(c=>(!county||c.county===county)&&(!q||[c.crop_name,c.description,c.county].some(v=>(v||'').toLowerCase().includes(q)))));
+  }
+  $('search').oninput=filter;$('countyFilter').onchange=filter;
+  $('myListings').onclick=async()=>{
+    const {data,error}=await db.from('crops').select('id,user_id,crop_name,description,county,quantity,unit,price_per_unit,status,created_at').eq('user_id',session.user.id).order('created_at',{ascending:false});
+    if(error)return notice(error.message,true);render(data||[],'myListingsArea',true);
+  };
+  $('signOut').onclick=async()=>{
+    const {error}=await db.auth.signOut();
+    if(error)return notice(error.message,true);
+    session=null;profile=null;$('accountPanel').classList.add('hidden');
+    $('adminNav')?.remove();$('accountBtn').textContent='Sign in';await loadCrops();notice('Signed out.');
+  };
+
+  async function loadAdmin() {
+    if(!session||profile?.role!=='admin'){ $('adminPanel').classList.add('hidden');return notice('Admin access denied.',true);}
+    const [{data:cs,error:ce},{data:us,error:ue}]=await Promise.all([
+      db.from('crops').select('id,user_id,crop_name,county,quantity,unit,price_per_unit,status,created_at').order('created_at',{ascending:false}).limit(200),
+      db.from('profiles').select('id,full_name,role,county,created_at').order('created_at',{ascending:false}).limit(500)
+    ]);
+    if(ce||ue)return notice('Could not load admin data. Check database policies.',true);
+    $('userCount').textContent=us.length;$('listingCount').textContent=cs.length;$('countyCount').textContent=new Set(cs.map(c=>c.county)).size;
+    $('adminListings').innerHTML='<div style="overflow:auto"><table><tr><th>Crop</th><th>County</th><th>Price</th><th>Status</th><th>Action</th></tr>'+cs.map(c=>`<tr><td>${esc(c.crop_name)}</td><td>${esc(c.county)}</td><td>KSh ${Number(c.price_per_unit).toLocaleString()}</td><td>${esc(c.status)}</td><td><button class="secondary change" data-id="${esc(c.id)}" data-status="${c.status==='rejected'?'published':'rejected'}">${c.status==='rejected'?'Republish':'Reject'}</button></td></tr>`).join('')+'</table></div>';
+    $('adminUsers').innerHTML='<div style="overflow:auto"><table><tr><th>Name</th><th>Role</th><th>County</th></tr>'+us.map(u=>`<tr><td>${esc(u.full_name)}</td><td>${esc(u.role)}</td><td>${esc(u.county)}</td></tr>`).join('')+'</table></div>';
+    $('adminListings').querySelectorAll('.change').forEach(b=>b.onclick=async()=>{
+      if(profile?.role!=='admin')return notice('Not authorized.',true);
+      const {error}=await db.from('crops').update({status:b.dataset.status}).eq('id',b.dataset.id);
+      if(error)return notice(error.message,true);
+      await loadAdmin();await loadCrops();notice('Listing status updated.');
+    });
+  }
+  $('refreshAdmin').onclick=loadAdmin;
+  await loadProfile();await loadCrops();
+}
+</script>
+</body>
+</html>
